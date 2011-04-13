@@ -1,0 +1,18 @@
+#NAME, TYPE, MESSAGE SECTION, FORMAT, WEIGHT, THRESHHOLD, <RATIO>
+#ratio_unformatted, ratio, DEFAULT, none, DEFAULT, 0.301278335656
+#bayes_unformatted, bayes, DEFAULT, none, DEFAULT, 0.0788497688361
+#ratio_formatted, ratio, DEFAULT, plain, DEFAULT, 0.2580593353
+#bayes_formatted, bayes, DEFAULT, plain, DEFAULT, 0.24
+
+#bayes_half, bayes, none, 0.5, DEFAULT
+#bayes_3_4, bayes, none, 0.75, DEFAULT
+#bayes_equal, bayes, none, 1, DEFAULT
+#bayes_1.5, bayes, none, 1.5, DEFAULT
+#bayes_double, bayes, none, 2, DEFAULT
+#bayes_2.5, bayes, none, 2.5, DEFAULT
+
+bayes_body_subject_from, bayes, body subject from, none, DEFAULT, 0.0788497688361
+bayes_body_subject, bayes, body subject, none, DEFAULT, 0.0788497688361
+bayes_body_from, bayes, body from, none, DEFAULT, 0.0788497688361
+
+bayes_body, bayes, body, none, DEFAULT, 0.0788497688361
