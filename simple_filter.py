@@ -23,6 +23,15 @@ class SimpleFilter(Filter):
     def init_model(self):
         self.model = {}
 
+    def calculate_confidence(self, value):
+        if value > self.threshold:
+            range = 1 - self.threshold
+            return value / range
+        elif value < threshold:
+            return value / self.threshold
+        else:  # value exactly at threshhold
+            return 0
+
     def words(self, message, format=None):
         if format == None:
             format = self.format

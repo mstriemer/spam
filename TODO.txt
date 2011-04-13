@@ -5,7 +5,7 @@ Composite Models
 	X-Biased Models
 	Consensus
 	Weighted
-Correct Confidece: BCJ
+Test usefulness of Confidence: BCJ
 Paper: Mark, BCJ
 Email Scuse
 Someone Elses Emails

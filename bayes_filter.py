@@ -97,4 +97,4 @@ class BayesFilter(SimpleFilter):
                 confidence = p / (p + np)
                 prediction = (self.threshold < confidence)
 
-        return prediction, confidence
+        return prediction, self.calculate_confidence(confidence)
