@@ -1,6 +1,7 @@
 from __future__ import division
 
 from filter import Filter
+from word import Word
 
 class RatioFilter(Filter):
     def init_model(self):

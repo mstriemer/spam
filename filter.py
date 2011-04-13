@@ -1,5 +1,7 @@
 from settings import PLAIN, RE_NL, MIME, FORMATTING, CON_TYPE, TAG
 
+import re
+
 class Filter(object):
     name = None
     sections = None

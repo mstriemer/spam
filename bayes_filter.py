@@ -1,8 +1,9 @@
 from __future__ import division
 
-inport math
+import math
 
 from filter import Filter
+from word import Word
 
 class BayesFilter(Filter):
     equal_ratio = None
