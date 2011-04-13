@@ -27,13 +27,19 @@ class Result(object):
                 self.false_positives += 1
 
     def false_positive_ratio(self):
-        return (self.false_positives/self.num_valid)
+        if self.num_valid > 0:
+            return (self.false_positives/self.num_valid)
+        else:
+            return 0
 
     def false_positive_percentage(self):
         return str((self.false_positive_ratio())*100) + '%'
 
     def false_negative_ratio(self):
-        return (self.false_negatives/self.num_spam)
+        if self.num_spam > 0:
+            return (self.false_negatives/self.num_spam)
+        else:
+            return 0
 
     def false_negative_percentage(self):
         return str((self.false_negative_ratio())*100) + '%'

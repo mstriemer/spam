@@ -2,16 +2,16 @@ from __future__ import division
 
 import math
 
-from filter import Filter
+from simple_filter import SimpleFilter
 from word import Word
 
-class BayesFilter(Filter):
+class BayesFilter(SimpleFilter):
     equal_ratio = None
     num_spam = None
     num_valid = None
 
-    def __init__(self, name, sections, threshhold, weight, format, equal_ratio=True):
-        super(BayesFilter, self).__init__(name, sections, threshhold, weight, format)
+    def __init__(self, sections, threshold, weight, format, equal_ratio=True):
+        super(BayesFilter, self).__init__(sections, threshold, weight, format)
         self.equal_ratio = equal_ratio
 
     def init_model(self):
@@ -93,6 +93,6 @@ class BayesFilter(Filter):
 
             if not skip:
                 confidence = p/(p + np)
-                prediction = (self.threshhold < confidence)
+                prediction = (self.threshold < confidence)
         
         return prediction, confidence

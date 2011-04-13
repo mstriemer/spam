@@ -4,6 +4,7 @@
 SPAM = 'spam'
 BODY = 'body'
 FROM = 'from'
+SUBJECT = 'subject'
 
 ###############
 #VALUES VALUES#
@@ -11,17 +12,16 @@ FROM = 'from'
 
 #MODE VALUES
 TEST_MODE = '-t'                #normal mode in which models are tested
-OPT_MODE = '-o'                 #optimize more in which threshholds are optimized for either reducing false-postives or false negatives
+OPT_MODE = '-o'                 #optimize more in which thresholds are optimized for either reducing false-postives or false negatives
 
 #OPT_MODE VALUES
-OPT_SPAM = 'spam'               #flag for optimizing threshholds based on maximizing spam detection
-OPT_VALID = 'valid'             #flag for optimizing threshholds based on minimizing misclassifying valid email
+OPT_SPAM = 'spam'               #flag for optimizing thresholds based on maximizing spam detection
+OPT_VALID = 'valid'             #flag for optimizing thresholds based on minimizing misclassifying valid email
 OPT_TRIALS = 4                  #number of trials at each level. more trials is slower, but more accurate
 MIN_IMPROVEMENT = 0.95          #new results/old results must be smaller than MIN_IMPROVEMENT for another test run to occur
 OPT_RESULTS = 'results.txt'     #file results are saved to
 
 #FILE DEFAULTS
-DEFAULT_FILE = 'default.train'  #file containing training values
 DEFAULT_DIR = '/mail'           #directory mail is stored in
 DEFAULT_TRAIN = 0               #number of messages to use for training
 

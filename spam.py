@@ -1,10 +1,11 @@
 from __future__ import division
 
-import math
 import os
 import random
 import re
 import sys
+
+import models
 
 from bayes_filter import BayesFilter
 from ratio_filter import RatioFilter
@@ -28,124 +29,6 @@ def get_mail_list(root, format = FILE_FORMAT):
                 mail.append(path + '/' + file)
 
     return mail
-
-####################
-#load_filter
-#PURPOSE: loads a filter
-#PARAMS:
-#       unformatted
-#RETURNS: filter
-####################
-def load_filter(unformatted):
-    values = unformatted.split(',')
-    valid = True
-    reason = ''
-    
-    filter = None
-    name = None
-    type = None
-    threshhold = None
-    weight = None
-    format = None
-        
-    if len(values) >= 6:
-        name = values[0].strip()
-        type = values[1].strip()
-        sections = values[2].strip()
-        format = values[3].strip()
-        weight = values[4].strip()
-        threshhold = values[5].strip()
-        
-        if sections == USE_DEFAULT:
-            sections = SECTIONS
-        else:
-            sections = sections.split(' ')
-
-        if format == USE_DEFAULT:
-            format = False
-        elif format == NO_FORMAT:
-            format = False
-        elif format == PLAIN_FORMAT:
-            format = True
-        else:
-            reason = 'invalid formatting'
-            valid = False
-        
-        if valid:
-            if weight == USE_DEFAULT:
-                weight = 1
-            else:
-                try:
-                    weight = float(weight)
-                except ValueError:
-                    reason = 'weight value must be a number'
-                    valid = False
-                
-        if valid:
-            if threshhold == USE_DEFAULT:
-                threshhold = MODEL_THRESHHOLDS[type]
-            else:
-                try:
-                    threshhold = float(threshhold)
-
-                    if threshhold < 0 or threshhold > 1:
-                        reason = 'threshhold value must be between 0 and 1'
-                        valid = False
-                except ValueError:
-                    reason = 'threshold is not a number'
-                    valid = False
-    else:
-        reason = str(NUM_SETTINGS) + ' settings required'
-        valid = False
-    
-    if type == BAYES:
-        if len(values) == 7:
-            try:
-                equal_ratio = bool(values[6])
-                
-                filter = BayesFilter(name, sections, threshhold, weight, format, equal_ratio)
-            except ValueError:
-                reason = 'equal_ratio must be True or False'
-                valid = False
-        else:
-            filter = BayesFilter(name, sections, threshhold, weight, format)
-    elif type == RATIO:
-        filter = RatioFilter(name, sections, threshhold, weight, format)
-    else:
-        reason = 'invalid filter type: ' + str(type)
-        valid = False
-
-    if valid:
-        return filter
-    else:
-        print 'skipping: ' + str(unformatted).strip() + '\n\t' + reason
-        return None
-
-####################
-#load_filters
-#PURPOSE: loads a list of filters
-#PARAMS:
-#       filename: the file being loaded
-#RETURNS: a list of filters
-####################
-def load_filters(file):
-    
-    fin = open(file, 'r')
-    line = fin.readline()
-    
-    filters = {}
-    
-    while line:
-        if not line.startswith('#') and len(line.strip()) > 0:
-            filter = load_filter(line)
-        
-            if filter:
-                filters[filter.name] = filter
-        
-        line = fin.readline()
-    fin.close()
-
-    return filters
 
 ####################
 #reset_filters
@@ -266,20 +149,19 @@ def train_test(filters, mail, num_train):
     return filters, results
 
 def init(args):
-    train_file = DEFAULT_FILE
     root = DEFAULT_DIR
     num_train = DEFAULT_TRAIN
 
     if len(args) > 0:
-        train_file = args[0]
+        root = args[0]
 
         if len(args) > 1:
-            root = args[1]
-            
-            if len(args) > 2:
-                num_train = int(args[2])
+            try:
+                num_train = int(args[1])
+            except ValueError:
+                print 'invalid number for training, using default'
 
-    filters = load_filters(train_file)
+    filters = models.filters
 
     #load mail
     mail = get_mail_list(root)
@@ -321,7 +203,7 @@ def test_models(filters, mail, num_train):
     for num_trials in xrange(OPT_TRIALS):
         random.shuffle(mail)
         for section_num in xrange(4):
-            #set threshhold value
+            #set threshold value
             for key in filters:
                 filters[key][FTHRESHHOLD] = sections[key][section_num]
         

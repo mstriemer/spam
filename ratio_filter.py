@@ -1,9 +1,9 @@
 from __future__ import division
 
-from filter import Filter
+from simple_filter import SimpleFilter
 from word import Word
 
-class RatioFilter(Filter):
+class RatioFilter(SimpleFilter):
     def init_model(self):
         self.model = {}
 
@@ -31,9 +31,9 @@ class RatioFilter(Filter):
                 if word in self.model:
                     score += self.model[word].spam_ratio()
                 else:
-                    score += self.threshhold
+                    score += self.threshold
 
-        prediction = ((len(words)*self.threshhold < score))
+        prediction = ((len(words)*self.threshold < score))
         confidence = score/len(words)
         
         return prediction, confidence
