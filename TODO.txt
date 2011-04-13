@@ -1,0 +1,16 @@
+Refactor Bayes Predict Code: Mark
+Markov Chain Model
+Most Interesting Words
+Composite Models
+	X-Biased Models
+	Consensus
+	Weighted
+Correct Confidece: BCJ
+Paper: Mark, BCJ
+Email Scuse
+Someone Elses Emails
+Train on Test
+Dictionary
+	black/while listing
+	valid word list
+email-recipiant-based bayes
