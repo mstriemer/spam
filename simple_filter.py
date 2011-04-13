@@ -3,6 +3,7 @@ import re
 from filter import Filter
 from settings import PLAIN, RE_NL, MIME, FORMATTING, CON_TYPE, TAG
 
+
 class SimpleFilter(Filter):
     sections = None
     model = None
@@ -15,37 +16,37 @@ class SimpleFilter(Filter):
         self.sections = sections
         self.threshold = threshhold
         self.weight = weight
-        self.format  = format
-        
+        self.format = format
+
         self.init_model()
-    
+
     def init_model(self):
         self.model = {}
 
-    def words(self, message, format = None):
+    def words(self, message, format=None):
         if format == None:
             format = self.format
-    
+
         re_renl = re.compile(RE_NL)
         re_skip = re.compile(MIME)
         re_formatting = re.compile(FORMATTING)
         re_type = re.compile(CON_TYPE)
         re_tag = re.compile(TAG)
-        
+
         text = ''
         for section in self.sections:
             if section in message:
                 text += message[section]
-                
+
         lines = text.split('\n')
         formed_lines = []
 
         for line in lines:
             m = re_renl.search(line)
-        
+
             if m:
                 formed_lines.append(m.group(1) + ' ')
-            else: #should never be else
+            else:  # should never be else
                 formed_lines.append(line + ' ')
 
         words = ''
@@ -77,14 +78,13 @@ class SimpleFilter(Filter):
         else:
             for line in formed_lines:
                 m = re_tag.search(line)
-                
+
                 while m:
                     words += m.group(1) + ' ' + m.group(2)
                     line = m.group(3)
 
                     m = re_tag.search(line)
-                
+
                 words += line
 
         return words.split(' ')
-

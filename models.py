@@ -17,6 +17,9 @@ filters['bayes_formatted'] = BayesFilter(SECTIONS, 0.24, 1, True)
 #filters['bayes_triple'] = BayesFilter(SECTIONS, 0.0788497688361, 3, False)
 
 #filters['bayes_body'] = BayesFilter([BODY], 0.0788497688361, 1, False)
-#filters['bayes_body_from'] = BayesFilter([BODY, FROM], 0.0788497688361, 1, False)
-#filters['bayes_body_subject'] = BayesFilter([BODY, SUBJECT], 0.0788497688361, 1, False)
-#filters['bayes_body_subject_from']  = BayesFilter([BODY, SUBJECT, FROM], 0.0788497688361, 1, False)
+#filters['bayes_body_from'] = \
+#    BayesFilter([BODY, FROM], 0.0788497688361, 1, False)
+#filters['bayes_body_subject'] = \
+#    BayesFilter([BODY, SUBJECT], 0.0788497688361, 1, False)
+#filters['bayes_body_subject_from']  = \
+#    BayesFilter([BODY, SUBJECT, FROM], 0.0788497688361, 1, False)
