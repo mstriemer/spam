@@ -11,10 +11,10 @@ class SimpleFilter(Filter):
     weight = None
     format = None
 
-    def __init__(self, sections, threshhold, weight, format):
+    def __init__(self, sections, threshold, weight, format):
         super(SimpleFilter, self).__init__()
         self.sections = sections
-        self.threshold = threshhold
+        self.threshold = threshold
         self.weight = weight
         self.format = format
 
@@ -27,7 +27,7 @@ class SimpleFilter(Filter):
         if value > self.threshold:
             range = 1 - self.threshold
             return value / range
-        elif value < threshold:
+        elif value < self.threshold:
             return value / self.threshold
         else:  # value exactly at threshhold
             return 0
@@ -71,7 +71,7 @@ class SimpleFilter(Filter):
                         checking = True
                     elif checking:
                         if re_type.search(line):
-                            skipping = not (PLAIN in line)
+                            skipping = not PLAIN in line
                             checking = False
                             wait_til_blank = True
                     elif not skipping and not wait_til_blank:
