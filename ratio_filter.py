@@ -36,5 +36,8 @@ class RatioFilter(SimpleFilter):
 
         prediction = ((len(words) * self.threshold < score))
         confidence = score / len(words)
+        
+        #confidence = self.calculate_confidence(confidence)
+        #prediction = confidence <= 0.5
 
-        return prediction, self.calculate_confidence(confidence)
+        return prediction, confidence

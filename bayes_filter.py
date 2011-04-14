@@ -96,5 +96,4 @@ class BayesFilter(SimpleFilter):
             if not skip:
                 confidence = p / (p + np)
                 prediction = (self.threshold < confidence)
-
         return prediction, self.calculate_confidence(confidence)

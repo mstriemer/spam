@@ -1,3 +1,5 @@
+from __future__ import division
+
 import re
 
 from filter import Filter
@@ -26,9 +28,11 @@ class SimpleFilter(Filter):
     def calculate_confidence(self, value):
         if value > self.threshold:
             range = 1 - self.threshold
-            return value / range
+            return (value-self.threshold) / range
         elif value < self.threshold:
-            return value / self.threshold
+            value = (1-value)
+            range = (1-self.threshold)
+            return ((value-self.threshold) / (range))
         else:  # value exactly at threshhold
             return 0
 
