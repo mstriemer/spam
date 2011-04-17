@@ -13,6 +13,19 @@ from result import Result
 from settings import *
 
 
+def average_runs(filters, mail, num_train, runs=3):
+    """Return the average of runs"""
+    results = {}
+    for _ in xrange(runs):
+        iter_results = train_test(filters, mail, num_train)
+        for f, r in iter_results.items():
+            if f in results:
+                results[f].append(r)
+            else:
+                results[f] = [r]
+        filters = reset_filters(filters)
+    return dict((f, Result(*rs)) for f, rs in results.items())
+
 ####################
 #get_mail_list
 #PURPOSE: searches a directory for mail file to load
@@ -102,7 +115,7 @@ def load_message(file):
 #       filters: the list of filters to be trained
 #RETURNS: the updated filters
 ####################
-def train(mail, filters):
+def train(filters, mail):
     for file in mail:
         message, is_spam = load_message(file)
 
@@ -120,7 +133,7 @@ def train(mail, filters):
 #       filters: the list of filters to be tested
 #RETURNS: filters
 ####################
-def test(mail, filters):
+def test(filters, mail):
     results = {}
     for key in filters:
         results[key] = Result()
@@ -143,16 +156,17 @@ def test(mail, filters):
 #RETURNS: filters
 ####################
 def train_test(filters, mail, num_train):
+    random.shuffle(mail)
     train_mail = mail[0:num_train]
     test_mail = mail[num_train:]
 
     print 'training on ' + str(len(train_mail)) + ' files'
-    filters = train(train_mail, filters)
+    filters = train(filters, train_mail)
 
     print 'testing on ' + str(len(test_mail)) + ' files'
-    (filters, results) = test(test_mail, filters)
+    (filters, results) = test(filters, test_mail)
 
-    return filters, results
+    return results
 
 
 def init(args):
@@ -172,7 +186,6 @@ def init(args):
 
     #load mail
     mail = get_mail_list(root)
-    random.shuffle(mail)
 
     #calculate the number of training files
     max = RATIO_TO_TRAIN * len(mail)
@@ -184,18 +197,18 @@ def init(args):
 
 def test_models(filters, mail, num_train):
     if len(filters) > 0:
-        (filters, results) = train_test(filters, mail, num_train)
+        results = average_runs(filters, mail, num_train)
 
         for key in filters:
-            print str(key) + ':'
-            print '\tFalse Positives: ' + \
-                results[key].false_positive_percentage()
-            print '\t\t' + str(results[key].false_positives) + \
-                ' of ' + str(results[key].num_valid)
-            print '\tFalse Negatives: ' + \
-                results[key].false_negative_percentage()
-            print '\t\t' + str(results[key].false_negatives) + \
-                ' of ' + str(results[key].num_spam)
+            print '%s:' % key
+            print ('\tFalse Positives: %.2f%%' %
+                                    results[key].false_positive_percentage())
+            print '\t\t %.2f of %.2f' % (results[key].false_positives,
+                                                        results[key].num_valid)
+            print ('\tFalse Negatives: %.2f%%' %
+                                    results[key].false_negative_percentage())
+            print '\t\t %.2f of %.2f' % (results[key].false_negatives,
+                                                        results[key].num_spam)
 
 
 """def optimize_models(opt_mode, restriction, filters, mail, num_train, \
