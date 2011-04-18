@@ -5,28 +5,33 @@ sections_to_use = ['body', 'received', 'delivered-to', 'from', 'return-path',
 
 def optimization_parameters():
     # threshold, strength, prob_spam, num_words_to_use
-    thresholds = (0.999, 0.9999, 0.99999)
-    strengths = (0.10, 0.15, 0.25)
+    thresholds = (0.999, 0.9999,)
+    strengths = (0.1, 0.2, 0.3)
     prob_spams = (0.4, 0.5, 0.6)
     num_words_to_uses = (15, 25, 35)
+    test_thresholds = (-1,)
     for threshold in thresholds:
         for strength in strengths:
             for prob_spam in prob_spams:
                 for num_words_to_use in num_words_to_uses:
-                    yield (threshold, strength, prob_spam, num_words_to_use)
+                    for test_threshold in test_thresholds:
+                        yield (threshold, strength, prob_spam,
+                                            num_words_to_use, test_threshold)
 
 
 class BayesFilter(object):
-    def __init__(self, threshold, strength, prob_spam, num_words_to_use):
+    def __init__(self, threshold, strength, prob_spam, num_words_to_use,
+                                                            test_threshold):
         self.threshold = threshold
         self.strength = strength
         self.prob_spam = prob_spam
         self.num_words_to_use = num_words_to_use
+        self.test_threshold = test_threshold
         self.init_model()
 
     def init_model(self):
         self.model = FilterModel(self.strength, self.prob_spam,
-                                                        self.num_words_to_use)
+                                    self.num_words_to_use, self.test_threshold)
 
     def train(self, message, is_spam):
         found_words = {}
@@ -39,20 +44,23 @@ class BayesFilter(object):
 
     def predict(self, message):
         classification = self.model.classify(message)
-        return classification > self.threshold, classification
+        prediction = classification > self.threshold
+        self.train(message, prediction)
+        return prediction, classification
 
 
 class FilterModel(object):
     s = 0.5
     prob_spam = 0.5
 
-    def __init__(self, strength, prob_spam, num_words_to_use):
+    def __init__(self, strength, prob_spam, num_words_to_use, test_threshold):
         self.words = {}
         self.spam = 0
         self.ham = 0
         self.s = strength
         self.prob_spam = prob_spam
         self.num_words_to_use = num_words_to_use
+        self.test_threshold = test_threshold
 
     def found_word(self, word, is_spam):
         if word in self.words:
@@ -62,11 +70,11 @@ class FilterModel(object):
         if is_spam:
             self.spam += 1
         else:
-            self.ham += 1
+            self.ham += 2
 
     @property
     def total(self):
-        return self.spam + self.ham * 2
+        return self.spam + self.ham
 
     def classify(self, message):
         probabilities = self._interesting_probabilities_for_message(message)
@@ -85,18 +93,25 @@ class FilterModel(object):
 
     def _interesting_probabilities_for_message(self, message):
         probabilities = self._probabilities_for_message(message)
-        return self._find_interesting_probabilities(probabilities)
+        if self.test_threshold > 0:
+            return self._find_interesting_probabilities_threshold(
+                                                                probabilities)
+        else:
+            return self._find_interesting_probabilities_number(probabilities)
 
-    def _find_interesting_probabilities(self, probabilities):
+    def _find_interesting_probabilities_number(self, probabilities):
         probabilities.sort(key=lambda p: abs(0.5 - p))
-        # print probabilities
         return probabilities[-self.num_words_to_use:]
+
+    def _find_interesting_probabilities_threshold(self, probabilities):
+        return [p for p in probabilities if abs(0.5 - p) < self.test_threshold]
 
     def _probabilities_for_message(self, message):
         probabilities = []
         for section, words in message.items():
             if section in sections_to_use:
                 for word in words.split():
+                    word = word.strip('.,!?@:;()[]{}\\/"\'')
                     if word in self.words and self.words[word].total > 3:
                         bayes_word = self.words[word]
                         prob_spam_for_word = bayes_word.spamicity(self.spam,
@@ -113,14 +128,15 @@ class FilterModel(object):
 class BayesWord(object):
     def __init__(self, word, is_spam):
         self.word = word
-        self.spam = 1 if is_spam else 0
-        self.ham = 1 if not is_spam else 0
+        self.spam = 0
+        self.ham = 0
+        self.found(is_spam)
 
     def found(self, is_spam):
         if is_spam:
             self.spam += 1
         else:
-            self.ham += 1
+            self.ham += 2
 
     def spamicity(self, spam, ham):
         prob_word_in_spam = self.spam / spam
@@ -129,4 +145,4 @@ class BayesWord(object):
 
     @property
     def total(self):
-        return self.spam + self.ham * 2
+        return self.spam + self.ham
